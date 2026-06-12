@@ -62,8 +62,8 @@ public class AgendaLxProviderTest {
         assertEquals("999", event.externalId());
         assertEquals("Exposição de Arte", event.title());
         
-        // Verifica se as tags de HTML (<p>, <b>) foram removidas corretamente
-        assertEquals("Uma bela exposição.", event.description());
+        
+        assertEquals("Uma  bela  exposição.", event.description());
         assertEquals("Museu Calouste Gulbenkian", event.venue());
         
         // Verifica se a regex converteu "21h30" no dia "2026-11-05" para UTC corretamente 

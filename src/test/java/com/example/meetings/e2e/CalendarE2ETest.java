@@ -40,8 +40,8 @@ public class CalendarE2ETest {
         // 1. Preparar a Base de Dados (Testing Database) com o DbSetup
         String hashedPass = passwordEncoder.encode("senha123");
         Operation operation = sequenceOf(
-                deleteAllFrom("meeting_participant", "meetings", "user"),
-                insertInto("user")
+                deleteAllFrom("meeting_participants", "meetings", "users"),
+                insertInto("users")
                         .columns("id", "username", "email", "password_hash", "ical_token")
                         .values(1L, "pedro_e2e", "pedro@fc.ul.pt", hashedPass, "token-e2e")
                         .build()
@@ -63,7 +63,7 @@ public class CalendarE2ETest {
     }
 
     @Test
-    void userCanLoginAndProposeMeetingSuccessfully() {
+    void userCanLoginAndProposeMeetingSuccessfully() throws InterruptedException {
         String baseUrl = "http://localhost:" + port;
 
         // 1. Navegar para a página de Login
@@ -73,6 +73,9 @@ public class CalendarE2ETest {
         driver.findElement(By.name("username")).sendKeys("pedro_e2e");
         driver.findElement(By.name("password")).sendKeys("senha123");
         driver.findElement(By.cssSelector("button[type='submit']")).click();
+
+
+        Thread.sleep(1000);
 
         // 3. Validar se entrou no Calendário
         assertEquals(baseUrl + "/calendar", driver.getCurrentUrl(), "Deve ser redirecionado para o calendário");
@@ -85,17 +88,17 @@ public class CalendarE2ETest {
         driver.findElement(By.name("title")).sendKeys(meetingTitle);
         driver.findElement(By.name("description")).sendKeys("Apresentação do Projeto 2");
         
-        // Cuidado com os inputs datetime-local, o Selenium precisa de um formato exato
         WebElement startInput = driver.findElement(By.name("start"));
-        startInput.sendKeys("15-06-2026");
-        startInput.sendKeys("10:00");
-
         WebElement endInput = driver.findElement(By.name("end"));
-        endInput.sendKeys("15-06-2026");
-        endInput.sendKeys("11:30");
+
+        org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+        js.executeScript("arguments[0].value = '2026-06-15T10:00';", startInput);
+        js.executeScript("arguments[0].value = '2026-06-15T11:30';", endInput);
 
         // Submeter o formulário
-        driver.findElement(By.cssSelector("button[type='submit']")).click();
+        driver.findElement(By.name("title")).submit();
+
+        Thread.sleep(1000);
 
         // 6. Validar o resultado
         assertEquals(baseUrl + "/calendar", driver.getCurrentUrl(), "Deve voltar ao calendário após propor");

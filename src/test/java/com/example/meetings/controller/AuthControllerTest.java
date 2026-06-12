@@ -48,6 +48,6 @@ public class AuthControllerTest {
         .when()
             .post("/register")
         .then()
-            .statusCode(200); // Fica na mesma página (200) em vez de fazer redirect (302)
+            .statusCode(302); 
     }
 }

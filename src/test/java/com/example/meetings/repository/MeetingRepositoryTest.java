@@ -33,23 +33,23 @@ public class MeetingRepositoryTest {
     void prepareDatabase() {
         // 1. Limpar as tabelas e inserir dados de teste usando o DbSetup
         Operation operation = sequenceOf(
-                deleteAllFrom("meeting_participant", "meetings", "user"), // Limpa na ordem correta devido às Foreign Keys
-                insertInto("user")
+                deleteAllFrom("meeting_participants", "meetings", "users"), // Limpa na ordem correta devido às Foreign Keys
+                insertInto("users")
                         .columns("id", "username", "email", "password_hash", "ical_token")
                         .values(1L, "pedro", "pedro@email.com", "hash", "token123")
                         .values(2L, "joao", "joao@email.com", "hash", "token456")
                         .build(),
                 insertInto("meetings")
                         .columns("id", "title", "start_time", "end_time", "organizer_id")
-                        // Reunião 1: Pedro é o organizador
-                        .values(10L, "Reunião A", "2026-06-15 10:00:00", "2026-06-15 11:00:00", 1L)
-                        // Reunião 2: João é o organizador (Pedro será convidado)
-                        .values(20L, "Reunião B", "2026-06-16 14:00:00", "2026-06-16 15:00:00", 2L)
+                        // Reunião 1: Usa Instant em vez de String
+                        .values(10L, "Reunião A", Instant.parse("2026-06-15T10:00:00Z"), Instant.parse("2026-06-15T11:00:00Z"), 1L)
+                        // Reunião 2: Usa Instant em vez de String
+                        .values(20L, "Reunião B", Instant.parse("2026-06-16T14:00:00Z"), Instant.parse("2026-06-16T15:00:00Z"), 2L)
                         .build(),
-                insertInto("meeting_participant")
+                insertInto("meeting_participants")
                         .columns("id", "meeting_id", "user_id", "status")
                         // Pedro recusa (DECLINED = ordinal 1) o convite do João
-                        .values(100L, 20L, 1L, 1) 
+                        .values(100L, 20L, 1L, "DECLINED") 
                         .build()
         );
 
