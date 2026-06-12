@@ -40,6 +40,8 @@ public class MeetingService {
             throw new IllegalArgumentException("End time must be after start time");
         }
 
+        checkForDuplicateEvent(organizer, title, start);
+
         Meeting meeting = new Meeting(title, description, start, end, organizer);
 
         // Organizer auto-accepts; the slot is blocked on their calendar immediately.
@@ -84,6 +86,8 @@ public class MeetingService {
      */
     @Transactional
     public Meeting copyFromDiscovered(User user, DiscoveredEvent event) {
+
+        checkForDuplicateEvent(user, event.title(), event.start());
         Instant end = event.end() != null ? event.end() : event.start().plus(Duration.ofHours(2));
         String description = buildDescription(event);
         Meeting meeting = new Meeting(event.title(), description, event.start(), end, user);
@@ -109,5 +113,15 @@ public class MeetingService {
         User user = userRepository.findByIcalToken(token)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid iCal token"));
         return new ArrayList<>(calendarFor(user));
+    }
+
+    private void checkForDuplicateEvent(User user, String title, Instant start) {
+        List<Meeting> userMeetings = meetingRepository.findCalendarMeetings(user);
+        boolean duplicateExists = userMeetings.stream()
+                .anyMatch(m -> m.getTitle().equalsIgnoreCase(title) && m.getStartTime().equals(start));
+        
+        if (duplicateExists) {
+            throw new IllegalArgumentException("O utilizador já possui um evento com este título a esta hora.");
+        }
     }
 }
