@@ -50,7 +50,7 @@ public class ICalControllerTest {
         when(meetingService.calendarFor(dummyUser)).thenReturn(Collections.emptyList());
         when(icalService.render(any(), any())).thenReturn("BEGIN:VCALENDAR\nEND:VCALENDAR");
 
-        // Act & Assert (O poder do Rest-Assured!)
+        // Act & Assert 
         given()
             .pathParam("token", validToken)
         .when()

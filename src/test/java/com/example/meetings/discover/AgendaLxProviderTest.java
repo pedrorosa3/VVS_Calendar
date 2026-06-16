@@ -67,7 +67,7 @@ public class AgendaLxProviderTest {
         assertEquals("Museu Calouste Gulbenkian", event.venue());
         
         // Verifica se a regex converteu "21h30" no dia "2026-11-05" para UTC corretamente 
-        // (Em novembro PT está no mesmo fuso UTC)
+        
         assertEquals("2026-11-05T21:30:00Z", event.start().toString());
     }
 }

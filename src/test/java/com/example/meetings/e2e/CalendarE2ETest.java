@@ -37,7 +37,7 @@ public class CalendarE2ETest {
 
     @BeforeEach
     void setUp() {
-        // 1. Preparar a Base de Dados (Testing Database) com o DbSetup
+        // Preparar a Base de Dados (Testing Database) com o DbSetup
         String hashedPass = passwordEncoder.encode("senha123");
         Operation operation = sequenceOf(
                 deleteAllFrom("meeting_participants", "meetings", "users"),
@@ -48,7 +48,7 @@ public class CalendarE2ETest {
         );
         new DbSetup(new DataSourceDestination(dataSource), operation).launch();
 
-        // 2. Configurar o Selenium WebDriver em modo invisível (Headless)
+        // Configurar o Selenium WebDriver em modo invisível (Headless)
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless=new"); // Corre sem abrir a janela visual (ideal para o CI/GitHub Actions)
         options.addArguments("--remote-allow-origins=*");
@@ -66,10 +66,10 @@ public class CalendarE2ETest {
     void userCanLoginAndProposeMeetingSuccessfully() throws InterruptedException {
         String baseUrl = "http://localhost:" + port;
 
-        // 1. Navegar para a página de Login
+        // Navegar para a página de Login
         driver.get(baseUrl + "/login");
         
-        // 2. Fazer Login
+        //  Fazer Login
         driver.findElement(By.name("username")).sendKeys("pedro_e2e");
         driver.findElement(By.name("password")).sendKeys("senha123");
         driver.findElement(By.cssSelector("button[type='submit']")).click();
@@ -77,13 +77,13 @@ public class CalendarE2ETest {
 
         Thread.sleep(1000);
 
-        // 3. Validar se entrou no Calendário
+        // Validar se entrou no Calendário
         assertEquals(baseUrl + "/calendar", driver.getCurrentUrl(), "Deve ser redirecionado para o calendário");
         
-        // 4. Navegar para criar nova reunião
+        // Navegar para criar nova reunião
         driver.get(baseUrl + "/meetings/new");
 
-        // 5. Preencher o formulário de Proposta de Reunião
+        // Preencher o formulário de Proposta de Reunião
         String meetingTitle = "Defesa Final de VVS";
         driver.findElement(By.name("title")).sendKeys(meetingTitle);
         driver.findElement(By.name("description")).sendKeys("Apresentação do Projeto 2");
@@ -100,7 +100,7 @@ public class CalendarE2ETest {
 
         Thread.sleep(1000);
 
-        // 6. Validar o resultado
+        //  Validar o resultado
         assertEquals(baseUrl + "/calendar", driver.getCurrentUrl(), "Deve voltar ao calendário após propor");
         
         // Procurar o título da reunião no HTML da página do calendário

@@ -43,7 +43,7 @@ public class MeetingServiceTest {
 
     @Test
     void propose_DuplicateEvent_ThrowsException() {
-        // 1. Preparação (Arrange)
+        // Preparação (Arrange)
         String title = "Reunião de Projeto";
         Instant start = Instant.parse("2026-06-15T10:00:00Z");
         Instant end = Instant.parse("2026-06-15T11:00:00Z");
@@ -52,7 +52,7 @@ public class MeetingServiceTest {
         Meeting existingMeeting = new Meeting(title, "Descrição antiga", start, end, testUser);
         when(meetingRepository.findCalendarMeetings(testUser)).thenReturn(List.of(existingMeeting));
 
-        // 2 & 3. Execução e Validação (Act & Assert)
+        
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             meetingService.propose(testUser, title, "Nova descrição", start, end, Collections.emptyList());
         });

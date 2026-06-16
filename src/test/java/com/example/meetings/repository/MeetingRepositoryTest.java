@@ -31,7 +31,7 @@ public class MeetingRepositoryTest {
 
     @BeforeEach
     void prepareDatabase() {
-        // 1. Limpar as tabelas e inserir dados de teste usando o DbSetup
+        // Limpar as tabelas e inserir dados de teste usando o DbSetup
         Operation operation = sequenceOf(
                 deleteAllFrom("meeting_participants", "meetings", "users"), // Limpa na ordem correta devido às Foreign Keys
                 insertInto("users")
@@ -53,7 +53,7 @@ public class MeetingRepositoryTest {
                         .build()
         );
 
-        // 2. Executar a operação na base de dados H2
+        // Executar a operação na base de dados H2
         DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), operation);
         dbSetup.launch();
     }

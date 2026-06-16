@@ -19,12 +19,12 @@ public class TicketmasterProviderTest {
 
     @BeforeEach
     void setUp() {
-        // 1. Inicia o servidor Stub numa porta aleatória livre
+        // Inicia o servidor Stub numa porta aleatória livre
         wireMockServer = new WireMockServer(0);
         wireMockServer.start();
         WireMock.configureFor("localhost", wireMockServer.port());
 
-        // 2. Instancia o provider redirecionando-o para o servidor Stub em vez da API real
+        // Instancia o provider redirecionando-o para o servidor Stub em vez da API real
         String mockBaseUrl = "http://localhost:" + wireMockServer.port();
         provider = new TicketmasterProvider("dummy-key", "PT", mockBaseUrl);
     }
