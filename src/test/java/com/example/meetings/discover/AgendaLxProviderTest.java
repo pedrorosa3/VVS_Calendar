@@ -6,6 +6,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -33,19 +36,22 @@ public class AgendaLxProviderTest {
 
     @Test
     void search_ValidApiCall_CleansHtmlAndParsesWeirdTimes() {
+        // Data futura relativa a hoje: o provider descarta ocorrências no passado
+        LocalDate futureDate = LocalDate.now(ZoneId.of("Europe/Lisbon")).plusDays(30);
+
         String mockJsonResponse = """
             [
               {
                 "id": 999,
                 "title": { "rendered": "Exposição de Arte" },
                 "description": [ "<p>Uma <b>bela</b> exposição.</p>" ],
-                "occurences": [ "2026-11-05" ],
+                "occurences": [ "%s" ],
                 "string_times": "qui: 21h30",
                 "link": "http://agendalx.pt/arte",
                 "venue": { "1": { "name": "Museu Calouste Gulbenkian" } }
               }
             ]
-            """;
+            """.formatted(futureDate);
 
         stubFor(get(urlPathEqualTo("/events"))
                 .withQueryParam("search", equalTo("arte"))
@@ -66,8 +72,8 @@ public class AgendaLxProviderTest {
         assertEquals("Uma  bela  exposição.", event.description());
         assertEquals("Museu Calouste Gulbenkian", event.venue());
         
-        // Verifica se a regex converteu "21h30" no dia "2026-11-05" para UTC corretamente 
-        
-        assertEquals("2026-11-05T21:30:00Z", event.start().toString());
+        // Verifica se a regex converteu "21h30" (hora de Lisboa) no instante correto
+        assertEquals(futureDate.atTime(LocalTime.of(21, 30)).atZone(ZoneId.of("Europe/Lisbon")).toInstant(),
+                event.start());
     }
 }
